@@ -3,6 +3,7 @@
 #########################################################################
 # License: Apache
 # Author: Vladimir Vuksan
+# Version: 0.1
 # Purpose: This script will archive cron or for that matter any output
 # to a CouchDB document. There are two main drivers
 # - Reduce the amount of cron e-mail spam

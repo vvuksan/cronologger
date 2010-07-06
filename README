@@ -1,0 +1,11 @@
+This script will archive cron or for that matter any output
+ to a CouchDB document. There are two main drivers
+ - Reduce the amount of cron e-mail spam
+ - Have logs of cron jobs that can be correlated to adverse events
+
+To run it simply precede a command with the cronologger command ie.
+
+  cronologger /usr/local/bin/backup_db.sh
+
+To configure cronologger you simply have to configure URL_BASE
+at the top of cronologger
