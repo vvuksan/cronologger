@@ -1,0 +1,97 @@
+#!/bin/bash
+
+#########################################################################
+# License: Apache
+# Author: Vladimir Vuksan
+# Purpose: This script will archive cron or for that matter any output
+# to a CouchDB document. There are two main drivers
+# - Reduce the amount of cron e-mail spam
+# - Have logs of cron jobs that can be correlated to adverse events
+#########################################################################
+
+###################################################
+# WHAT YOU NEED TO CHANGE.
+# Location of Cronologit CouchDB database
+###################################################
+URL_BASE="http://localhost:5984/cronologger"
+
+###################################################
+# BELOW SHOULD LIKELY NOT BE CHANGED
+###################################################
+set -eu
+
+STDOUT=`mktemp`
+STDERR=`mktemp`
+
+################################################################
+# Record UNIX time when job started
+################################################################
+UNIX_TIME_START=`date "+%s"`
+TIME_START=`date "+%Y-%m-%d %T"`
+TIME_START_NOSPACES=`date "+%Y%m%d%H%M%S"`
+TEMP_FILE=`mktemp`
+TEMP_FILE2=`mktemp`
+
+# Get the FQDN of the host we are running on
+HOST=`hostname`
+
+###############################################################
+# Calculate command sum. This should make doing searches
+# much easier. I thought about using MD5 but it 
+# seemed too long so I am using sum. Change if you wish
+# by commenting the line below and uncommenting the line 
+# below it
+###############################################################
+SUM=`echo "$@" | sum | cut -f1 -d" "`
+# SUM=`echo "$@" | md5sum -t | cut -f1 -d" "`
+
+# Document URL. Key contains time, host and command sum
+URL="$URL_BASE/${TIME_START_NOSPACES}_${HOST}_${SUM}"
+###############################################################
+# Generate Document JSON
+# Since the job is in progress we'll set job_duration to -1
+# We'll update it once the job finishes
+###############################################################
+cat <<EOF > $TEMP_FILE
+{
+"hostname": "${HOST}",
+"command_line": "$@",
+"unixtime": "${UNIX_TIME_START}",
+"job_duration": "-1",
+"time": "${TIME_START}",
+"command_sum": "${SUM}",
+}
+EOF
+
+# Create a document
+REV=`curl -s -X PUT ${URL} -d @$TEMP_FILE | sed "s/.*rev//g" | awk -F\" '{ print $3}'`
+
+# Get the resulting JSON since we want to change the job duration once the job_duration
+# is finished. 
+curl -s -o $TEMP_FILE2 ${URL}
+
+################################################################
+# Run the command and redirect output
+################################################################
+set +e
+"$@" > $STDOUT 2> $STDERR
+set -e
+
+###############################################################
+# Calculate job duration
+###############################################################
+UNIX_TIME_END=`date "+%s"`
+JOB_DURATION=$((UNIX_TIME_END-UNIX_TIME_START))
+
+# Replace the job_duration in the JSON with the actual job duration
+sed -i "s/\"job_duration\":\"-1\"/\"job_duration\":\"$JOB_DURATION\"/g" $TEMP_FILE2
+
+# Update the document to reflect the job duration
+REV=`curl -s -X PUT ${URL} -d @$TEMP_FILE2 | sed "s/.*rev//g" | awk -F\" '{ print $3}'`
+# Add the standard out attachment
+REV=`curl -s -X PUT -H 'Content-Type: text/plain' --data-binary @$STDOUT "$URL/stdout?rev=${REV}"| sed "s/.*rev//g" | awk -F\" '{ print $3}'`
+# Add the standard error attachment
+REV=`curl -s -X PUT -H 'Content-Type: text/plain' --data-binary @$STDERR "$URL/stderr?rev=${REV}"| sed "s/.*rev//g" | awk -F\" '{ print $3}'`
+
+# Clean up
+rm -f "$STDOUT" "$STDERR" "$TEMP_FILE" "$TEMP_FILE2"
