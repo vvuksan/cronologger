@@ -1,0 +1,23 @@
+{
+  "_id":"_design/cronview",
+  "language":"javascript",
+  "views":
+    {   
+    "by_host":
+      {
+        "map":"function(doc) { if (doc.hostname)  emit(doc.hostname, doc) }"
+      },
+    "by_job_duration":
+      {
+        "map":"function(doc) { if (doc.job_duration)  emit(doc.job_duration, doc) }"
+      },
+    "by_username":
+      {
+        "map":"function(doc) { if (doc.username)  emit(doc.username, doc) }"
+      },
+    "by_unixtime":
+      {
+        "map":"function(doc) { if (doc.unixtime)  emit(doc.unixtime, doc) }"
+      }
+    }
+}

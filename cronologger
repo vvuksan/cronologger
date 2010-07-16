@@ -64,8 +64,8 @@ cat <<EOF > $TEMP_FILE
 "hostname": "${HOST}",
 "username": "${USER}",
 "command_line": "$@",
-"unixtime": "${UNIX_TIME_START}",
-"job_duration": "-1",
+"unixtime": ${UNIX_TIME_START},
+"job_duration": -1,
 "time": "${TIME_START}",
 "command_sum": "${SUM}",
 }
@@ -94,7 +94,7 @@ UNIX_TIME_END=`date "+%s"`
 JOB_DURATION=$((UNIX_TIME_END-UNIX_TIME_START))
 
 # Replace the job_duration in the JSON with the actual job duration. Also add the re
-sed -i "s/\"job_duration\":\"-1\"/\"job_duration\":\"$JOB_DURATION\", \"return_code\": \"$RETURN_CODE\"/g" $TEMP_FILE2
+sed -i "s/\"job_duration\":-1/\"job_duration\":$JOB_DURATION, \"return_code\": $RETURN_CODE/g" $TEMP_FILE2
 
 # Update the document to reflect the job duration
 REV=`curl -s -X PUT ${URL} -d @$TEMP_FILE2 | sed "s/.*rev//g" | awk -F\" '{ print $3}'`

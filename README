@@ -1,14 +1,76 @@
 This script will archive cron or for that matter any output
- to a CouchDB document. There are two main drivers
+to a CouchDB document. There are two main drivers
+
  - Reduce the amount of cron e-mail spam
  - Have logs of cron jobs that can be correlated to adverse events
+
+Script will log following items
+
+  - Command line used
+  - Hostname script ran on
+  - Username script ran on
+  - Time started
+  - How long the job took (job_duration)
+  - Exit/return code of the job
+
+
+REQUIREMENTS
+============
+
+- CouchDB 0.10+ for storage
+- curl web client installed on all the nodes running cronologger
+
+INSTALLATION
+============
+
+First create a database on CouchDB. 
+
+Then at top of cronologger script define the URL to CouchDB ie.
+
+URL_BASE="http://localhost:5984/cronologger"
+
+You could also define environment variables CRONOLOGGER_SERVER (defaults to localhost)
+and CRONOLOGGER_DB (defaults cronologger) ie.
+
+export CRONOLOGGER_SERVER=couch01
+export CRONOLOGGER_DB=crondb
+
+RUNNING
+=======
 
 To run it simply precede a command with the cronologger command ie.
 
   cronologger /usr/local/bin/backup_db.sh
 
-To configure cronologger you simply have to configure URL_BASE
-at the top of cronologger
+That's it. Check out CouchDBs web interface 
+
+http://localhost:5984/_utils/
+
+on your CouchDB you should see an entry for the job that just ran.
+
+WEB GUI
+=======
+
+There is PHP based web GUI however you have to create CouchDB views to be able
+to use it. You can find the view specification in cronview.json. To install/refresh the
+view define CRONOLOGGER_SERVER and CRONOLOGGER_DB variables and run refresh_view.sh
+
+export CRONOLOGGER_SERVER=couch01
+export CRONOLOGGER_DB=crondb
+
+Copy contents of the web subdirectory to your web document root ie. /var/www/html/cronologger.
+To configure web GUI create a config.php file which should only contain values that
+override the default values specified in config.default.php e.g.
+
+<?php
+
+$couchdb_server = "couch01";
+
+?>
+
+Enjoy.
+
+##########################################################################################
 
 All the scripts are licensed under the Apache License, Version 2.0 (the "License") 
 unless otherwise noted; you may not use this file except in compliance with the License. 
