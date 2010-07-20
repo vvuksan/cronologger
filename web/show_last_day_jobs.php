@@ -21,13 +21,33 @@ require_once 'lib/couch.php';
 require_once 'lib/couchClient.php';
 require_once 'lib/couchDocument.php';
 
-// set a new connector to the CouchDB server
-$client = new couchClient ('http://' . $couchdb_server . ':' . $couchdb_port, $couchdb_database );
+$couch_url = 'http://' . $couchdb_server . ':' . $couchdb_port;
+$couch_url_full = $couch_url . "/" . $couchdb_database;
 
+// set a new connector to the CouchDB server
+$client = new couchClient ($couch_url , $couchdb_database);
+
+if ( isset( $_GET['showday'] )) {
+    $unixtime = strtotime($_GET['showday']);
+} else {
+    $unixtime = mktime(0,0,0,date("m"), date("d"), date("Y"));
+}
+
+$time_prev = $unixtime - 86400;
+$prev_timeperiod = date('Y-m-d', $time_prev);
+$time_after = $unixtime + 86400;
+$next_timeperiod = date('Y-m-d', $time_after);    
+
+?>
+
+<center><a href=?showday=<?php print $prev_timeperiod .'>' . $prev_timeperiod; ?> <----</a> Go to  
+<a href=?showday=<?php print $next_timeperiod . ">----> " . $next_timeperiod ;?></a>
+
+<?
 // view fetching, using the view option limit
 try {
-    $end_time = time();
-    $start_time = $end_time - 86400;
+    $start_time = $unixtime;
+    $end_time = $start_time + 86400;
     $client->startkey($start_time);    
     $client->endkey($end_time);
     $view = $client->limit(100)->asArray()->getView('cronview','by_unixtime');    
@@ -40,20 +60,27 @@ try {
 ##############################################################
 if ( sizeof($view["rows"]) > 0 ) {
 
-  print "<h2>Jobs that ran within last 24 hours</h2><p>
+  print "<p><h2>Displaying jobs that ran on " . date("Y-m-d", $unixtime) ."</h2><p>
   <table cellspacing=1 class=tablesorter border=1>
   <thead>
-  <tr><th>Start time</th><th>Job duration</th><th>Username</th><th>Hostname</th><th>Command</th></tr>
+  <tr><th>Start time</th><th>Job duration</th><th>Return code</th>
+  <th>Username</th><th>Hostname</th><th>Command</th>
+  <th>StdOut (Bytes)</th><th>StdErr (Bytes)</th>
+  </tr>
   </thead>
   <tbody>";
 
   foreach ( $view["rows"] as $key => $row ) {
     
+    $docid = $row["value"]["_id"];
     print "<tr><td>" . $row["value"]["time"] . "</td>" .
-    "<td align=center>" . $row["value"]["job_duration"] . "</td>" .    
+    "<td align=center>" . $row["value"]["job_duration"] . "</td>" .
+    "<td align=center>" . $row["value"]["return_code"] . "</td>" .    
     "<td>" . $row["value"]["username"] . "</td>" .
     "<td>" . $row["value"]["hostname"] . "</td>" .
     "<td>" . $row["value"]["command_line"] . "</td>" .
+    "<td><a href=" . $couch_url_full . "/" . $docid . "/stdout>" . $row["value"]["_attachments"]["stdout"]["length"] . "</a></td>" .
+    "<td><a href=" . $couch_url_full . "/" . $docid . "/stderr>" . $row["value"]["_attachments"]["stderr"]["length"] . "</a></td>" .
     "</tr>\n";
   }
 
@@ -61,7 +88,7 @@ if ( sizeof($view["rows"]) > 0 ) {
 
 } else {
 
-  print "No jobs running";
+  print "<p class=nojobs>No jobs running</p>";
 
 }
 
