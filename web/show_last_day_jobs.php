@@ -79,8 +79,8 @@ if ( sizeof($view["rows"]) > 0 ) {
     "<td>" . $row["value"]["username"] . "</td>" .
     "<td>" . $row["value"]["hostname"] . "</td>" .
     "<td>" . $row["value"]["command_line"] . "</td>" .
-    "<td><a href=" . $couch_url_full . "/" . $docid . "/stdout>" . $row["value"]["_attachments"]["stdout"]["length"] . "</a></td>" .
-    "<td><a href=" . $couch_url_full . "/" . $docid . "/stderr>" . $row["value"]["_attachments"]["stderr"]["length"] . "</a></td>" .
+    "<td><a href=get_attachment.php?docid=" . $docid . "&output=stdout>" . $row["value"]["_attachments"]["stdout"]["length"] . "</a></td>" .
+    "<td><a href=get_attachment.php?docid=" . $docid . "&output=stderr>" . $row["value"]["_attachments"]["stderr"]["length"] . "</a></td>" .
     "</tr>\n";
   }
 
