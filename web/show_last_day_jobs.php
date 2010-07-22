@@ -5,6 +5,12 @@
 <link rel="stylesheet" href="css/style.css" type="text/css" id="" media="print, projection, screen" /> 
 <script language="javascript" type="text/javascript" src="js/jquery.min.js"></script> 
 <script type="text/javascript" src="js/jquery.tablesorter.min.js"></script> 
+<style>
+td.centered {
+	text-align: center;
+}
+</style>
+
 </head>
 <body>
 <?php
@@ -76,11 +82,11 @@ if ( sizeof($view["rows"]) > 0 ) {
     print "<tr><td>" . $row["value"]["time"] . "</td>" .
     "<td align=center>" . $row["value"]["job_duration"] . "</td>" .
     "<td align=center>" . $row["value"]["return_code"] . "</td>" .    
-    "<td>" . $row["value"]["username"] . "</td>" .
-    "<td>" . $row["value"]["hostname"] . "</td>" .
+    "<td class=centered>" . $row["value"]["username"] . "</td>" .
+    "<td class=centered>" . $row["value"]["hostname"] . "</td>" .
     "<td>" . $row["value"]["command_line"] . "</td>" .
-    "<td><a href=get_attachment.php?docid=" . $docid . "&output=stdout>" . $row["value"]["_attachments"]["stdout"]["length"] . "</a></td>" .
-    "<td><a href=get_attachment.php?docid=" . $docid . "&output=stderr>" . $row["value"]["_attachments"]["stderr"]["length"] . "</a></td>" .
+    "<td class=centered><a href=get_attachment.php?docid=" . $docid . "&output=stdout>" . $row["value"]["_attachments"]["stdout"]["length"] . "</a></td>" .
+    "<td class=centered><a href=get_attachment.php?docid=" . $docid . "&output=stderr>" . $row["value"]["_attachments"]["stderr"]["length"] . "</a></td>" .
     "</tr>\n";
   }
 
