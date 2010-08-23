@@ -18,6 +18,10 @@
     "by_unixtime":
       {
         "map":"function(doc) { if (doc.unixtime)  emit(doc.unixtime, doc) }"
+      },
+    "by_commandline":
+      {
+        "map":"function(doc) { if (doc.command_line)  emit(doc.command_line, doc) }"
       }
     }
 }
