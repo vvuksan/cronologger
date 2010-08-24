@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# if cronologger fails, pass through the command so it still runs.
+trap "$@" ERR
+
 #########################################################################
 # License: Apache
 # Author: Vladimir Vuksan
@@ -81,6 +84,7 @@ curl -s -o $TEMP_FILE2 ${URL}
 ################################################################
 # Run the command and redirect output
 ################################################################
+trap - ERR # if we get to here we no longer need our handler.
 set +e
 "$@" > $STDOUT 2> $STDERR
 # Capture command return code
