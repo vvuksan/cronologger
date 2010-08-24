@@ -16,11 +16,15 @@ trap "$@" ERR
 #########################################################################
 # WHAT YOU NEED TO CHANGE.
 # Location of Cronologit CouchDB database
-# You could also supply it on the command line e.g. 
+# The settings can be sourced from /etc/cronologger.conf or
+# you could supply them as environmental variables e.g. 
 # export CRONOLOGGER_SERVER=bla.domain.com
 # export CRONOLOGGER_DB=cronologger
 # Otherwise it defaults to http://localhost:5984/cronologger
 #########################################################################
+
+[ -e /etc/cronologger.conf ] && . /etc/cronologger.conf
+
 CRONOLOGGER_SERVER=${CRONOLOGGER_SERVER:=localhost}
 CRONOLOGGER_DB=${CRONOLOGGER_DB:=cronologger}
 URL_BASE="http://{$CRONOLOGGER_SERVER}:5984/${CRONOLOGGER_DB}"
