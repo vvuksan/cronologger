@@ -49,7 +49,7 @@ $next_timeperiod = date('Y-m-d', $time_after);
 <center><a href=?showday=<?php print $prev_timeperiod .'>' . $prev_timeperiod; ?> <----</a> Go to  
 <a href=?showday=<?php print $next_timeperiod . ">----> " . $next_timeperiod ;?></a>
 
-<?
+<?php
 // view fetching, using the view option limit
 try {
     $start_time = $unixtime;

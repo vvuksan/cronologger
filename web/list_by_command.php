@@ -35,7 +35,7 @@ $client = new couchClient ($couch_url , $couchdb_database);
 
 ?>
 
-<?
+<?php
 // view fetching, using the view option limit
 try {
     if ( isset( $_GET['command'])) {
