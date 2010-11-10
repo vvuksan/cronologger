@@ -15,12 +15,12 @@ $couch_url_full = $couch_url . "/" . $couchdb_database;
 
 if ( isset($_GET['docid']) && isset($_GET['output']) ) {
   $attachment_url = $couch_url_full . "/" . $_GET['docid'] . "/" . $_GET['output'];
-  $fp = fopen($attachment_url, "r");
-  while (!feof ($fp)) {
-    $line = fgets ($fp, 1024);
-    print $line;
+  if ($fp = fopen($attachment_url, "r")) {
+    while (!feof ($fp)) {
+      $line = fgets ($fp, 1024);
+      print $line;
+    }
+    fclose($fp);
   }
-  fclose($fp);
-
 }
 ?>
