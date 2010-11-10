@@ -68,6 +68,9 @@ $couchdb_server = "couch01";
 
 ?>
 
+The web interface requires php >= 5.2, and 'allow_url_fopen = On' configured in your 
+php.ini file.
+
 Enjoy.
 
 ##########################################################################################
