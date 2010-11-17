@@ -1,18 +1,3 @@
-<html>
-<head>
-<title>Cronologger : Only Show Errors</title>
-<link rel="stylesheet" href="css/jq.css" type="text/css" media="print, projection, screen" /> 
-<link rel="stylesheet" href="css/style.css" type="text/css" id="" media="print, projection, screen" /> 
-<script language="javascript" type="text/javascript" src="js/jquery.min.js"></script> 
-<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script> 
-<style>
-td.centered {
-	text-align: center;
-}
-</style>
-
-</head>
-<body>
 <?php
 
 require_once("./config.default.php");
@@ -33,7 +18,7 @@ $couch_url_full = $couch_url . "/" . $couchdb_database;
 // set a new connector to the CouchDB server
 $client = new couchClient ($couch_url , $couchdb_database);
 
-if ( isset( $_GET['showday'] )) {
+if ( isset( $_GET['showday'] ) && $_GET['showday'] != "" ) {
     $unixtime = strtotime($_GET['showday']);
 } else {
     $unixtime = mktime(0,0,0,date("m"), date("d"), date("Y"));
@@ -46,8 +31,8 @@ $next_timeperiod = date('Y-m-d', $time_after);
 
 ?>
 
-<center><a href=?showday=<?php print $prev_timeperiod .'>' . $prev_timeperiod; ?> <----</a> Go to  
-<a href=?showday=<?php print $next_timeperiod . ">----> " . $next_timeperiod ;?></a>
+<center><a href="#" onclick='getJobsListing("<?php print $_GET['search_type'] . "\",\"" . $prev_timeperiod ; ?>"); return false;'><?php print $prev_timeperiod; ?></a> <----</a> Go to  
+----><a href="#" onclick='getJobsListing("<?php print $_GET['search_type'] . "\",\"" . $next_timeperiod; ?>"); return false;'><?php print $next_timeperiod; ?></a>
 
 <?php
 // view fetching, using the view option limit
@@ -66,7 +51,13 @@ try {
 ##############################################################
 if ( sizeof($view["rows"]) > 0 ) {
 
-  print "<p><h2>Displaying jobs that ran on " . date("Y-m-d", $unixtime) ." and had errors</h2><p>
+  if ( isset( $_GET['search_type'] ) && $_GET['search_type'] == "errors" ) {
+
+    print "<p><h2>Displaying jobs that ran on " . date("Y-m-d", $unixtime) ." and had errors</h2><p>";
+
+  }
+
+  print "
   <table cellspacing=1 class=tablesorter border=1>
   <thead>
   <tr><th>Start time</th><th>Job duration</th><th>Return code</th>
@@ -77,8 +68,11 @@ if ( sizeof($view["rows"]) > 0 ) {
   <tbody>";
 
   foreach ( $view["rows"] as $key => $row ) {
-    if (! $row["value"]["_attachments"]["stderr"]["length"] > 0 ) {
-       continue;
+
+    if ( isset( $_GET['search_type'] ) && $_GET['search_type'] == "errors" ) {
+      if (! $row["value"]["_attachments"]["stderr"]["length"] > 0 ) {
+	continue;
+      }
     }
     
     $docid = $row["value"]["_id"];
@@ -91,13 +85,13 @@ if ( sizeof($view["rows"]) > 0 ) {
     "<td class=centered><a href=get_attachment.php?docid=" . $docid . "&output=stdout>" . $row["value"]["_attachments"]["stdout"]["length"] . "</a></td>" .
     "<td class=centered><a href=get_attachment.php?docid=" . $docid . "&output=stderr>" . $row["value"]["_attachments"]["stderr"]["length"] . "</a></td>" .
     "</tr>\n";
-  }
+  } // end of foreach ( $view["rows"] as $key => $row )
 
   print "</tbody></table>";
 
 } else {
 
-  print "<p class=nojobs>No jobs running</p>";
+  print "<p class=nojobs>No jobs to display</p>";
 
 }
 
@@ -107,6 +101,3 @@ if ( sizeof($view["rows"]) > 0 ) {
         // call the tablesorter plugin
         $("table").tablesorter();
 }); </script> 
-
-</body>
-</html>

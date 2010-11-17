@@ -1,12 +1,3 @@
-<html>
-<head>
-<title>Cronologger : Currently running jobs</title>
-<link rel="stylesheet" href="css/jq.css" type="text/css" media="print, projection, screen" /> 
-<link rel="stylesheet" href="css/style.css" type="text/css" id="" media="print, projection, screen" /> 
-<script language="javascript" type="text/javascript" src="js/jquery.min.js"></script> 
-<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script> 
-</head>
-<body>
 <?php
 
 require_once("./config.default.php");
@@ -67,11 +58,3 @@ if ( sizeof($view["rows"]) > 0 ) {
 }
 
 ?>
-<script type="text/javascript" id="js">
-    $(document).ready(function() {
-        // call the tablesorter plugin
-        $("table").tablesorter();
-}); </script> 
-
-</body>
-</html>

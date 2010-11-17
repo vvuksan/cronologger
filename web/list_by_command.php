@@ -3,7 +3,7 @@
 <title>Cronologger : Only Show Errors</title>
 <link rel="stylesheet" href="css/jq.css" type="text/css" media="print, projection, screen" /> 
 <link rel="stylesheet" href="css/style.css" type="text/css" id="" media="print, projection, screen" /> 
-<script language="javascript" type="text/javascript" src="js/jquery.min.js"></script> 
+<script language="javascript" type="text/javascript" src="js/jquery-1.4.4.min.js"></script> 
 <script type="text/javascript" src="js/jquery.tablesorter.min.js"></script> 
 <style>
 td.centered {
