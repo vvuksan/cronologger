@@ -18,16 +18,16 @@ function getJobsListing(search_type,showday) {
   } else {
     targetdiv = "#tabs-job-log";
   }
+  $(targetdiv).html('<img src="img/spinner.gif">');
   $.get('list_jobs.php', "search_type=" + search_type + "&showday=" + showday, function(data) {
-    $(targetdiv).html('<img src="img/spinner.gif">');
     $(targetdiv).html(data);
     $("table").tablesorter();
   });
 }
 
 function getCurrentlyRunning() {
+  $("#tabs-currently-running").html('<img src="img/spinner.gif">');
   $.get('list_running_jobs.php', "" , function(data) {
-    $("#tabs-currently-running").html('<img src="img/spinner.gif">');
     $("#tabs-currently-running").html(data);
     $("table").tablesorter();
   });
